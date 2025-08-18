@@ -1,107 +1,20 @@
-from typing import Any
+#!/usr/bin/env python3
+"""
+Original Laoshan test, updated to use the proper recirc module.
+"""
 
+from recirc import *
 
-class Pipeline:
-    def __init__(self) -> None:
-        pass
-
-    def __call__(self, cls, *args: Any, **kwds: Any) -> Any:
-        original_init = cls.__init__
-
-        def new_init(instance, *args, **kwargs):
-            original_init(instance, *args, **kwargs)
-        
-        cls.__init__ = new_init
-        for attr_name, attr_value in cls.__dict__.items():
-            if isinstance(attr_value, staticmethod):
-                setattr(self, attr_name, attr_value)
-        return cls
-
-    
-
-
-class Regfile:
-    def __init__(self, size, width) -> None:
-        self.size = size
-
-    def __class_getitem__(cls, index):
-        pass
-
-    def __call__(self, cls, *args: Any, **kwds: Any) -> Any:
-        print(cls)
-        return 1
-
-
-class ReadPort:
-    pass
-
-
-class WritePort:
-    pass
-
-
-class Operand:
-    def __init__(self, regfile) -> None:
-        pass
-    def __call__(self, cls, *args: Any, **kwds: Any) -> Any:
-        pass
-
-
-class Binary:
-    pass
-
-
-class Syntax:
-    pass
-
-
-class Sematic:
-    pass
-
-
-class FuncUnit:
-    def __init__(self, arg_list) -> None:
-        pass
-
-    def __call__(self, *args: Any, **kwds: Any) -> Any:
-        pass
-
-
-class Instruction:
-    def __init__(self, func) -> None:
-        pass
-
-
-class stage:
-    def __enter__():
-        pass
-
-    def __exit__():
-        pass
-
-
-class action:
-    def __enter__():
-        pass
-
-    def __exit__():
-        pass
-
-
-class Uint:
-    def __class_getitem__(cls, index):
-        pass
-
-
+# Define pipeline  
 @Pipeline()
 class pipe:
     fe = 0
-    id = 0
+    id = 0  
     ex0 = "M130_PIPE.ex"
     ex1 = 0
     wb = 0
 
-
+# Define vector register file
 @Regfile(16, 128)
 class vr:
     wp0: WritePort
@@ -109,20 +22,19 @@ class vr:
     rp0: ReadPort
     rp1: ReadPort
     rp2: ReadPort
-    
 
+# Define vector register operand
 @Operand(vr)
-class vreg():
-    
-    def __init__(self, idx: Uint[4]) -> None:
+class vreg:
+    def __init__(self, idx: Uint[4]):
         self.idx = idx
 
-
+# Define vector ALU
 @FuncUnit([pipe.ex0, pipe.ex1])
 class valu:
     pass
 
-
+# Define vector MAC instruction
 @Instruction
 def vmac(vd: vreg, vs: vreg, vt: vreg):
     with stage([pipe.id]):
@@ -136,23 +48,9 @@ def vmac(vd: vreg, vs: vreg, vt: vreg):
         vd.wp0 = dst
 
 print(vr)
-# reg = vr()
 
-class VerilogSim:
-    def __init__(self, data) -> None:
-        pass
-
-    def __call__(self, func, *args: Any, **kwds: Any) -> Any:
-        pass
-
-class std_mem:
-    def __init__(self, width, size, num) -> None:
-        pass
-
-    def write(self, addr, data):
-        pass
-
-@VerilogSim(data = {})
+# Simulation
+@VerilogSim(data={})
 def sim():
     vs = vreg(0)
     vt = vreg(1)
@@ -164,3 +62,6 @@ def sim():
     vd.wp0 = 10
     vmac(vd, vs, vt)
     mem.write(0, vd.rp0)
+
+# Execute simulation
+sim()
